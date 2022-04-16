@@ -29,7 +29,7 @@ time: 2.1s
 rows: 50002
 time: 2.2s
 
-> node parsers/composed.js 
+> node parsers/async-composed.js 
 rows: 50002
 time: 2.6s
 ```
