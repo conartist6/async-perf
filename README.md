@@ -10,6 +10,10 @@ time: 52ms
 rows: 50002
 time: 161ms
 
+> node parsers/sync.js
+rows: 50002
+time: 295ms
+
 > node parsers/async.js        
 rows: 50002
 time: 1.5s
