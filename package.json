@@ -1,0 +1,6 @@
+{
+	"type": "module",
+	"dependencies": {
+		"iter-tools-es": "7.3.1"
+	}
+}
