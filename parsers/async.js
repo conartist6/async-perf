@@ -27,7 +27,7 @@ async function* csvParse(document) {
   yield row;
 }
 
-console.time('one-loop parsing');
+console.time('time');
 const rows = await arrayFromAsync(csvParse(join(createReadStream('./test.csv', 'utf-8'))));
 console.log('rows:', rows.length);
-console.timeEnd('one-loop parsing');
+console.timeEnd('time');

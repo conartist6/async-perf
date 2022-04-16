@@ -294,7 +294,7 @@ function _csvParse() {
   return _csvParse.apply(this, arguments);
 }
 
-console.time('transpiled parsing');
+console.time('time');
 const rows = await arrayFromAsync(csvParse(join(createReadStream('./test.csv', 'utf-8'))));
 console.log('rows:', rows.length);
-console.timeEnd('transpiled parsing');
+console.timeEnd('time');

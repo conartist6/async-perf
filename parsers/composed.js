@@ -9,7 +9,7 @@ function csvParse(input) {
   )
 }
 
-console.time('parsing');
+console.time('time');
 const rows = await arrayFromAsync(csvParse(asyncJoin(createReadStream('./test.csv', 'utf-8'))));
 console.log('rows:', rows.length);
-console.timeEnd('parsing');
+console.timeEnd('time');

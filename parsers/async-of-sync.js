@@ -23,7 +23,7 @@ async function* csvParseChunks(document) {
   yield row;
 }
 
-console.time('two-loop parsing');
+console.time('time');
 const rows = await arrayFromAsync(csvParseChunks(createReadStream('./test.csv', 'utf-8')));
 console.log('rows:', rows.length);
-console.timeEnd('two-loop parsing');
+console.timeEnd('time');

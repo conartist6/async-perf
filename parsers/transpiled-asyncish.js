@@ -303,7 +303,7 @@ function _csvParse() {
   return _csvParse.apply(this, arguments);
 }
 
-console.time('asyncish parsing');
+console.time('time');
 const rows = await arrayFromAsync(csvParse(join(createReadStream('./test.csv', 'utf-8'))));
 console.log('rows:', rows.length);
-console.timeEnd('asyncish parsing');
+console.timeEnd('time');
