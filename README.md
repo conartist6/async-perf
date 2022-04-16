@@ -18,10 +18,6 @@ time: 295ms
 rows: 50002
 time: 1.5s
 
-> node parsers/composed.js 
-rows: 50002
-time: 2.6s
-
 > node parsers/transpiled-async.js 
 rows: 50002
 time: 2.1s
@@ -29,4 +25,8 @@ time: 2.1s
 > node parsers/transpiled-asyncish.js
 rows: 50002
 time: 2.2s
+
+> node parsers/composed.js 
+rows: 50002
+time: 2.6s
 ```
