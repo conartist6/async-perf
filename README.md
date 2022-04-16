@@ -25,7 +25,7 @@ time: 1.5s
 rows: 50002
 time: 2.1s
 
-> node parsers/transpiled-asyncish.js
+> node parsers/transpiled-asyncish.js # note: under review
 rows: 50002
 time: 2.2s
 
