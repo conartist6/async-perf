@@ -14,6 +14,10 @@ time: 161ms
 rows: 50002
 time: 295ms
 
+> node parsers/sync-composed.js 
+rows: 50003
+time: 430ms
+
 > node parsers/async.js        
 rows: 50002
 time: 1.5s

@@ -1,5 +1,5 @@
 import { createReadStream } from 'fs';
-import { arrayFromAsync, asyncJoin, asyncSplitOn, asyncStr, asyncMap, execPipe, map } from 'iter-tools-es';
+import { arrayFromAsync, asyncJoin, asyncSplitOn, asyncStr, asyncMap, execPipe } from 'iter-tools-es';
 
 function csvParse(input) {
   return execPipe(
