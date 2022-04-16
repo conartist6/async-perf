@@ -1,5 +1,4 @@
-# async-perf
-Investigations of the speed of JS stream processing
+This repo contains my investigations into the speed of character stream processing in [node](https://nodejs.org/). Results are for streaming parsing of the 5.4MB [test.csv](https://raw.githubusercontent.com/conartist6/async-perf/trunk/test.csv) file in ~82 chunks of 65KB. The particular times listed were obtained with node v17.7.1 for ARM.
 
 ```
 > node parsers/memory.js       
