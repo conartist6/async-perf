@@ -1,5 +1,14 @@
 import { createReadStream } from 'fs';
 
+export function _isThenable(val) {
+  return (
+    !!val &&
+    (typeof val === 'object' || typeof val === 'function') &&
+    !!val.then &&
+    typeof val.then === 'function'
+  );
+}
+
 class Awaited {
   constructor(value) {
     this.awaitable = value;
@@ -16,7 +25,7 @@ export function _asyncGeneratorDelegate(inner, _awaitWrap) {
 
   function pump(key, arg) {
     var step = inner[key](arg);
-    if (step instanceof Promise) {
+    if (_isThenable(step)) {
       waiting = true;
       return { done: false, value: _awaitWrap(step) };
     } else {
@@ -159,9 +168,7 @@ export class _AsyncGenerator {
 function AsyncFromSyncIteratorContinuation(r) {
   if (Object(r) !== r) return Promise.reject(new TypeError(r + ' is not an object.'));
   var done = r.done;
-  return r.value instanceof Promise
-    ? Promise.resolve(r.value).then((value) => ({ value, done }))
-    : r;
+  return _isThenable(r.value) ? Promise.resolve(r.value).then((value) => ({ value, done })) : r;
 }
 
 function _SyncAsAsyncIterator(s) {
@@ -215,8 +222,9 @@ const _join = _wrapAsyncGenerator(function* (chunks) {
     for (
       let _step, _step2;
       (_step2 = _iterator.next()),
-        (_iteratorAbruptCompletion = !(_step =
-          _step2 instanceof Promise ? yield _awaitWrap(_step2) : _step2).done);
+        (_iteratorAbruptCompletion = !(_step = _isThenable(_step2)
+          ? yield _awaitWrap(_step2)
+          : _step2).done);
       _iteratorAbruptCompletion = false
     ) {
       const chunk = _step.value;
@@ -255,8 +263,9 @@ const _csvParse = _wrapAsyncGenerator(function* (document) {
     for (
       let _step, _step2;
       (_step2 = _iterator.next()),
-        (_iteratorAbruptCompletion = !(_step =
-          _step2 instanceof Promise ? yield _awaitWrap(_step2) : _step2).done);
+        (_iteratorAbruptCompletion = !(_step = _isThenable(_step2)
+          ? yield _awaitWrap(_step2)
+          : _step2).done);
       _iteratorAbruptCompletion = false
     ) {
       const chr = _step.value;
@@ -303,11 +312,10 @@ async function asyncToArray(source) {
     for (
       let _step, _step2;
       (_step2 = _iterator.next()),
-        (_iteratorAbruptCompletion = !(_step = _step2 instanceof Promise ? await _step2 : _step2)
-          .done);
+        (_iteratorAbruptCompletion = !(_step = _isThenable(_step2) ? await _step2 : _step2).done);
       _iteratorAbruptCompletion = false
     ) {
-      const value = _step.value instanceof Promise ? await _step.value : _step.value;
+      const value = _isThenable(_step.value) ? await _step.value : _step.value;
       arr.push(value);
     }
   } catch (err) {
