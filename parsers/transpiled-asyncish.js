@@ -14,16 +14,15 @@ export function _asyncGeneratorDelegate(inner) {
   const iter = {};
   let waiting = false;
 
-  function pump(key, value) {
-    const step = inner[key](value);
+  function pump(key, arg) {
+    var step = inner[key](arg);
     if (step instanceof Promise) {
       waiting = true;
-      return step.then(step => step.value instanceof Promise ? step.value.then((value) => ({ done: false, value })) : step)
+      return { done: false, value: awaitWrap(step.then(function(step) { return step.value instanceof Promise ? step.value.then((value) => { return { value: value, done: step.done }; }) : step })) };
     } else if (step.value instanceof Promise) {
       waiting = true;
-      return step.value.then((value) => ({ done: false, value }));
+      return { done: false, value: awaitWrap(step.value.then(function(value) { return { value: value, done: step.done }; })) };
     } else {
-      waiting = false;
       return step;
     }
   }
