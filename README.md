@@ -68,7 +68,7 @@ async function* codePoints(path) {
   }
 }
 
-const iter = codePoints('./test.csv')[Symbol.syncAndAsyncIterator]();
+const iter = codePoints('./test.csv')[Symbol.mixedIterator]();
 iter.next(); // Promise<{value: 103 , done: false }>
 iter.next(); // {value: 117 , done: false }
 ```
