@@ -65,20 +65,27 @@ time: 2.6s
 The proposed fix to the language is to introduce a `for await? .. of` loop that is defined to only await when awaiting is necessary. It would look like this:
 
 ```
-async function* codePoints(path) {
-  for await? (const chr of join(fs.openReadStream(path))) {
+async function* readFile(path) {
+  for await (const chunk of fs.openReadStream(path, 'utf8')) {
+    yield* chunk;
+  }
+}
+
+async function* codePoints(source) {
+  for await? (const chr of source) {
     yield chr.codePointAt(0);
   }
 }
 
-const iter = codePoints('./test.csv')[Symbol.mixedIterator]();
+// a mixed iterator can yield sync or async results
+const iter = codePoints(readFile('./test.csv'))[Symbol.mixedIterator]();
 iter.next(); // Promise<{ value: 103, done: false }>
 iter.next(); // { value: 117, done: false }
 
 // and for backwards compatibility:
-const iter = codePoints('./test.csv')[Symbol.asyncIterator]();
+const iter = codePoints(readFile('./test.csv'))[Symbol.asyncIterator]();
 iter.next(); // Promise<{ value: 103, done: false }>
 iter.next(); // Promise<{ value: 117, done: false }>
 ```
 
-It would also be necessary to make some changes to the way generators work internally so that their `next()` method can return an iterator result synchronously as long as no asynchronous work was needed to produce the value. To see what those changes would be take a look at how the optimization is implemented in this repo by running `git diff --no-index parsers/transpiled-async.js parsers/transpiled-asyncish.js`.
+It would also be necessary to make some changes to the way generators work internally so that they are able to compute a result synchronously as long as the code hits a `yield` before it hits an `await`. To see what those changes would be take a look at how the optimization is implemented in this repo by running `git diff --no-index parsers/transpiled-async.js parsers/transpiled-asyncish.js`.
