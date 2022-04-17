@@ -1,25 +1,34 @@
 import { createReadStream } from 'fs';
-import { arrayFromAsync } from 'iter-tools-es';
 
-class AwaitValue {
+class Awaited {
   constructor(value) {
-    this.wrapped = value;
+    this.awaited = value;
   }
 }
 
-export function _asyncGeneratorDelegate(inner, awaitWrap) {
+export function _await(value) {
+  return new Awaited(value);
+}
+
+export function _asyncGeneratorDelegate(inner) {
   const iter = {};
   let waiting = false;
 
   function pump(key, value) {
-    waiting = true;
-    value = new Promise(function (resolve) {
-      resolve(inner[key](value));
-    });
-    return { value: awaitWrap(value), done: false };
+    const step = inner[key](value);
+    if (step instanceof Promise) {
+      waiting = true;
+      return step.then(step => step.value instanceof Promise ? step.value.then((value) => ({ done: false, value })) : step)
+    } else if (step.value instanceof Promise) {
+      waiting = true;
+      return step.value.then((value) => ({ done: false, value }));
+    } else {
+      waiting = false;
+      return step;
+    }
   }
 
-  iter[(typeof Symbol !== 'undefined' && Symbol.iterator) || '@@iterator'] = function () {
+  iter[Symbol.iterator] = function () {
     return this;
   };
 
@@ -54,10 +63,6 @@ export function _asyncGeneratorDelegate(inner, awaitWrap) {
   return iter;
 }
 
-export function _awaitAsyncGenerator(value) {
-  return new AwaitValue(value);
-}
-
 export function _wrapAsyncGenerator(fn) {
   return function () {
     return new _AsyncGenerator(fn.apply(this, arguments));
@@ -75,37 +80,36 @@ export class _AsyncGenerator {
     }
   }
 
-  // This behavior still falls within the async iteration protocol
   [Symbol.asyncIterator]() {
     return this;
   }
 
   _send(method, arg) {
     const step = this._gen[method](arg);
-    const wrappedAwait = step.value instanceof AwaitValue;
-    return wrappedAwait
-      ? new Promise((resolve, reject) => {
-          const request = { method, arg, resolve, reject, next: null };
-          if (this._back) {
-            this._back = this._back.next = request;
-          } else {
-            this._front = this._back = request;
-            this._resume(method, step);
-          }
-        })
-      : step;
+    const isAsync = step.value instanceof Awaited || step.value instanceof Promise;
+
+    return !isAsync ? step : new Promise((resolve, reject) => {
+      const request = { method, arg, resolve, reject, next: null };
+      if (this._back) {
+        this._back = this._back.next = request;
+      } else {
+        this._front = this._back = request;
+        this._resume(method, arg, step);
+      }
+    });
   }
 
-  _resume(method, step) {
+  _resume(method, arg, step) {
     try {
+      if (!step) step = this._gen[method](arg);
       const { value } = step;
-      const wrappedAwait = value instanceof AwaitValue;
-      Promise.resolve(wrappedAwait ? value.wrapped : value).then(
+      const isAwait = value instanceof Awaited;
+      
+      Promise.resolve(isAwait ? value.awaited : value).then(
         (arg) => {
-          if (wrappedAwait) {
+          if (isAwait) {
             // the sync generator hit an `await`
-            const _method = method === 'return' ? 'return' : 'next';
-            this._resume(_method, this._gen[_method](arg));
+            this._resume(method === 'return' ? 'return' : 'next', arg);
           } else {
             // the sync generator hit a `yield`
             this._settle(step.done ? 'return' : 'normal', arg);
@@ -161,42 +165,9 @@ export function _asyncIterator(iterable) {
     return method.call(iterable);
   }
   if ((method = iterable[Symbol.iterator]) != null) {
-    return new _SyncAsAsyncIterator(method.call(iterable));
+    return method.call(iterable);
   }
   throw new TypeError('Object is not async iterable');
-}
-
-function AsyncFromSyncIteratorContinuation(step) {
-  if (Object(step) !== step) return Promise.reject(new TypeError(step + ' is not an object.'));
-  const done = step.done;
-  return Promise.resolve(step.value).then((value) => {
-    return { value, done };
-  });
-}
-
-export class _SyncAsAsyncIterator {
-  constructor(iter) {
-    this._iter = iter;
-  }
-
-  next(...args) {
-    const iter = this._iter;
-    return AsyncFromSyncIteratorContinuation(iter.next(...args));
-  }
-
-  return(value, ...args) {
-    const iter = this._iter;
-    return undefined === iter.return
-      ? Promise.resolve({ value, done: true })
-      : AsyncFromSyncIteratorContinuation(iter.return(value, ...args));
-  }
-
-  throw(value, ...args) {
-    const iter = this._iter;
-    return undefined === iter.throw
-      ? Promise.reject(value)
-      : AsyncFromSyncIteratorContinuation(iter.throw(value, ...args));
-  }
 }
 
 
@@ -216,14 +187,11 @@ function _join() {
       for (
         let _step, _step2;
         (_step2 = _iterator.next()),
-          (_iteratorAbruptCompletion = !(_step =
-            !(_step2 instanceof Promise) && !(_step2.value instanceof Promise)
-              ? _step2
-              : yield _awaitAsyncGenerator(_step2)).done);
+          (_iteratorAbruptCompletion = !(_step = _step2 instanceof Promise ? yield _await(_step2) : _step2).done);
         _iteratorAbruptCompletion = false
       ) {
-        const chunk = _step.value;
-        yield* _asyncGeneratorDelegate(_asyncIterator(chunk), _awaitAsyncGenerator);
+        const chunk = _step.value instanceof Promise ? yield _await(_step.value) : _step.value;
+        yield* _asyncGeneratorDelegate(_asyncIterator(chunk));
       }
     } catch (err) {
       _didIteratorError = true;
@@ -231,7 +199,7 @@ function _join() {
     } finally {
       try {
         if (_iteratorAbruptCompletion && _iterator.return != null) {
-          yield _awaitAsyncGenerator(_iterator.return());
+          yield _await(_iterator.return());
         }
       } finally {
         if (_didIteratorError) {
@@ -262,13 +230,11 @@ function _csvParse() {
       for (
         let _step, _step2;
         (_step2 = _iterator.next()),
-          (_iteratorAbruptCompletion2 = !(_step =
-            !(_step2 instanceof Promise) && !(_step2.value instanceof Promise)
-              ? _step2
-              : yield _awaitAsyncGenerator(_step2)).done);
+          (_iteratorAbruptCompletion2 = !(_step = _step2 instanceof Promise ? yield _await(_step2) : _step2).done);
         _iteratorAbruptCompletion2 = false
       ) {
-        const chr = _step.value;
+        const chr = _step.value instanceof Promise ? yield _await(_step.value) : _step.value;
+
         if (chr === ',') {
           row.push(value);
           value = '';
@@ -287,7 +253,7 @@ function _csvParse() {
     } finally {
       try {
         if (_iteratorAbruptCompletion2 && _iterator.return != null) {
-          yield _awaitAsyncGenerator(_iterator.return());
+          yield _await(_iterator.return());
         }
       } finally {
         if (_didIteratorError) {
@@ -303,7 +269,42 @@ function _csvParse() {
   return _csvParse.apply(this, arguments);
 }
 
+async function asyncToArray(source) {
+  const arr = [];
+  var _iteratorAbruptCompletion = false;
+  var _didIteratorError = false;
+  var _iterator = _asyncIterator(source);
+  var _iteratorError;
+
+  try {
+    for (
+      let _step, _step2;
+      (_step2 = _iterator.next()),
+        (_iteratorAbruptCompletion = !(_step = _step2 instanceof Promise ? await _step2 : _step2).done);
+      _iteratorAbruptCompletion = false
+    ) {
+      const value = _step.value instanceof Promise ? (await _step.value) : _step.value;
+      arr.push(value);
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (_iteratorAbruptCompletion && _iterator.return != null) {
+        await _iterator.return();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
+  }
+
+  return arr;
+}
+
 console.time('time');
-const rows = await arrayFromAsync(csvParse(join(createReadStream('./test.csv', 'utf-8'))));
+const rows = await asyncToArray(csvParse(join(createReadStream('./test.csv', 'utf-8'))));
 console.log('rows:', rows.length);
 console.timeEnd('time');

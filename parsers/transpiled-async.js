@@ -1,5 +1,4 @@
 import { createReadStream } from 'fs';
-import { arrayFromAsync } from 'iter-tools-es';
 
 class AwaitValue {
   constructor(value) {
@@ -294,7 +293,49 @@ function _csvParse() {
   return _csvParse.apply(this, arguments);
 }
 
+
+function asyncToArray(_x, _x2) {
+  return _asyncToArray.apply(this, arguments);
+}
+
+function _asyncToArray() {
+  _asyncToArray = _wrapAsyncGenerator(function* (source, fn) {
+    const arr = [];
+    var _iteratorAbruptCompletion = false;
+    var _didIteratorError = false;
+    var _iterator = _asyncIterator(source);
+    var _iteratorError;
+
+    try {
+      for (
+        var _step;
+        _iteratorAbruptCompletion = !(_step = yield _awaitAsyncGenerator(_iterator.next())).done;
+        _iteratorAbruptCompletion = false
+      ) {
+        const value = _step.value;
+        arr.push(value);
+      }
+    } catch (err) {
+      _didIteratorError = true;
+      _iteratorError = err;
+    } finally {
+      try {
+        if (_iteratorAbruptCompletion && _iterator.return != null) {
+          yield _awaitAsyncGenerator(_iterator.return());
+        }
+      } finally {
+        if (_didIteratorError) {
+          throw _iteratorError;
+        }
+      }
+    }
+
+    return arr;
+  });
+  return _asyncToArray.apply(this, arguments);
+}
+
 console.time('time');
-const rows = await arrayFromAsync(csvParse(join(createReadStream('./test.csv', 'utf-8'))));
+const rows = await asyncToArray(csvParse(join(createReadStream('./test.csv', 'utf-8'))));
 console.log('rows:', rows.length);
 console.timeEnd('time');
