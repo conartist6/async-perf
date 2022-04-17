@@ -5,7 +5,7 @@ This repo was created to experiment with reducing the costs of processing async 
 
 An async iterable of sync iterables is a difficult shape to work with though. We would almost always prefer to write logic in terms of a single sequence of characters, but when we thransform to a single sequence the only reasonable choice is to make it an async iterable, which means that every single character incurs overhead of creating various Promises and participating in the microtask queue.
 
-**This repostitory has been successful in demonstrating that there is a practical solution to this problem.** If you look below at the results below the baseline case is #6, and takes about 1.5 seconds to parse the test file. Transpiling that code introduces about another 25% overhead. I was able to show in case #5 that it is possible to modify the transpiled code so that it skips unnecessary awaits, resulting in the 434ms run, or a 4x speedup over the most comparable result (#7) which is identical aside from the lack of any optimization.
+**This repostitory has been successful in demonstrating that there is a practical solution to this problem.** If you look below at the results below the baseline case is #6, and takes about 1.5 seconds to parse the test file. Transpiling that code introduces about another 25% overhead. I was able to show in case #5 that it is possible to modify the transpiled code so that it skips unnecessary awaits, resulting in the 434ms run, or a **4x speedup** over the most comparable result (#7) which is identical aside from the lack of any optimization.
 
 ## Results
 ```
