@@ -57,3 +57,17 @@ time: 1.9s
 rows: 50002
 time: 2.6s
 ```
+
+## The proposal
+
+```
+async function* codePoints(path) {
+  for await? (const chr of join(fs.openReadStream(path))) {
+    yield chr.codePointAt(0);
+  }
+}
+
+const iter = codePoints('./test.csv')[Symbol.syncAndAsyncIterator]();
+iter.next(); // Promise<{value: 103 , done: false }>
+iter.next(); // {value: 117 , done: false }
+```
