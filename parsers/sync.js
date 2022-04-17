@@ -4,7 +4,7 @@ import { arrayFrom } from 'iter-tools-es';
 function* readChunks(path, encoding) {
   const fd = fs.openSync(path, 'r');
   let position = 0;
-  
+
   while (true) {
     const buffer = Buffer.alloc(65535);
     const bytesRead = fs.readSync(fd, buffer, { position });
@@ -18,7 +18,7 @@ function* readChunks(path, encoding) {
   fs.closeSync(fd);
 }
 
-function *join(chunks) {
+function* join(chunks) {
   for (const chunk of chunks) {
     yield* chunk;
   }

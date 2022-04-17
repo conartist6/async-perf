@@ -1,7 +1,7 @@
 import { createReadStream } from 'fs';
 import { arrayFromAsync } from 'iter-tools-es';
 
-async function *join(chunks) {
+async function* join(chunks) {
   for await (const chunk of chunks) {
     yield* chunk;
   }

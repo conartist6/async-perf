@@ -4,7 +4,7 @@ import { arrayFrom, join, splitOn, str, map, execPipe } from 'iter-tools-es';
 function* readChunks(path, encoding) {
   const fd = fs.openSync(path, 'r');
   let position = 0;
-  
+
   while (true) {
     const buffer = Buffer.alloc(65535);
     const bytesRead = fs.readSync(fd, buffer, { position });
@@ -22,8 +22,8 @@ function csvParse(input) {
   return execPipe(
     input,
     splitOn('\n'),
-    map(row => map(str, splitOn(',', row)))
-  )
+    map((row) => map(str, splitOn(',', row))),
+  );
 }
 
 console.time('time');

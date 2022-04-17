@@ -84,15 +84,17 @@ export class _AsyncGenerator {
     const step = this._gen[method](arg);
     const isAsync = step.value instanceof Awaited || step.value instanceof Promise;
 
-    return !isAsync ? step : new Promise((resolve, reject) => {
-      const request = { method, arg, resolve, reject, next: null };
-      if (this._back) {
-        this._back = this._back.next = request;
-      } else {
-        this._front = this._back = request;
-        this._resume(method, arg, step);
-      }
-    });
+    return !isAsync
+      ? step
+      : new Promise((resolve, reject) => {
+          const request = { method, arg, resolve, reject, next: null };
+          if (this._back) {
+            this._back = this._back.next = request;
+          } else {
+            this._front = this._back = request;
+            this._resume(method, arg, step);
+          }
+        });
   }
 
   _resume(method, arg, step) {
@@ -100,7 +102,7 @@ export class _AsyncGenerator {
       if (!step) step = this._gen[method](arg);
       const { value } = step;
       const isAwait = value instanceof Awaited;
-      
+
       Promise.resolve(isAwait ? value.awaitable : value).then(
         (arg) => {
           if (isAwait) {
@@ -162,9 +164,7 @@ _SyncAsAsyncIterator.prototype = {
   s: null,
   n: null,
   next: function () {
-    return AsyncFromSyncIteratorContinuation(
-      this.n.apply(this.s, arguments)
-    );
+    return AsyncFromSyncIteratorContinuation(this.n.apply(this.s, arguments));
   },
   return: function (value) {
     var ret = this.s.return;
@@ -178,7 +178,7 @@ _SyncAsAsyncIterator.prototype = {
       ? Promise.reject(value)
       : AsyncFromSyncIteratorContinuation(thr.apply(this.s, arguments));
   },
-}
+};
 
 export function _asyncIterator(iterable) {
   let method;
@@ -207,7 +207,8 @@ const _join = _wrapAsyncGenerator(function* (chunks) {
     for (
       let _step, _step2;
       (_step2 = _iterator.next()),
-        (_iteratorAbruptCompletion = !(_step = _step2 instanceof Promise ? yield _awaitWrap(_step2) : _step2).done);
+        (_iteratorAbruptCompletion = !(_step =
+          _step2 instanceof Promise ? yield _awaitWrap(_step2) : _step2).done);
       _iteratorAbruptCompletion = false
     ) {
       const chunk = _step.value;
@@ -246,7 +247,8 @@ const _csvParse = _wrapAsyncGenerator(function* (document) {
     for (
       let _step, _step2;
       (_step2 = _iterator.next()),
-        (_iteratorAbruptCompletion = !(_step = _step2 instanceof Promise ? yield _awaitWrap(_step2) : _step2).done);
+        (_iteratorAbruptCompletion = !(_step =
+          _step2 instanceof Promise ? yield _awaitWrap(_step2) : _step2).done);
       _iteratorAbruptCompletion = false
     ) {
       const chr = _step.value;
@@ -293,10 +295,11 @@ async function asyncToArray(source) {
     for (
       let _step, _step2;
       (_step2 = _iterator.next()),
-        (_iteratorAbruptCompletion = !(_step = _step2 instanceof Promise ? await _step2 : _step2).done);
+        (_iteratorAbruptCompletion = !(_step = _step2 instanceof Promise ? await _step2 : _step2)
+          .done);
       _iteratorAbruptCompletion = false
     ) {
-      const value = _step.value instanceof Promise ? (await _step.value) : _step.value;
+      const value = _step.value instanceof Promise ? await _step.value : _step.value;
       arr.push(value);
     }
   } catch (err) {

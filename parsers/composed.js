@@ -1,12 +1,19 @@
 import { createReadStream } from 'fs';
-import { arrayFromAsync, asyncJoin, asyncSplitOn, asyncStr, asyncMap, execPipe } from 'iter-tools-es';
+import {
+  arrayFromAsync,
+  asyncJoin,
+  asyncSplitOn,
+  asyncStr,
+  asyncMap,
+  execPipe,
+} from 'iter-tools-es';
 
 function csvParse(input) {
   return execPipe(
     input,
     asyncSplitOn('\n'),
-    asyncMap(row => asyncMap(asyncStr, asyncSplitOn(',', row)))
-  )
+    asyncMap((row) => asyncMap(asyncStr, asyncSplitOn(',', row))),
+  );
 }
 
 console.time('time');

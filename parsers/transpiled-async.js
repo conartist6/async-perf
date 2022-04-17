@@ -92,7 +92,7 @@ export class _AsyncGenerator {
       const step = this._gen[method](arg);
       const { value } = step;
       const isAwait = value instanceof Awaited;
-      
+
       Promise.resolve(isAwait ? value.awaitable : value).then(
         (arg) => {
           if (isAwait) {
@@ -147,8 +147,7 @@ export class _AsyncGenerator {
 }
 
 function AsyncFromSyncIteratorContinuation(r) {
-  if (Object(r) !== r)
-    return Promise.reject(new TypeError(r + " is not an object."));
+  if (Object(r) !== r) return Promise.reject(new TypeError(r + ' is not an object.'));
   var done = r.done;
   return Promise.resolve(r.value).then((value) => ({ value, done }));
 }
@@ -161,9 +160,7 @@ _SyncAsAsyncIterator.prototype = {
   s: null,
   n: null,
   next: function () {
-    return AsyncFromSyncIteratorContinuation(
-      this.n.apply(this.s, arguments)
-    );
+    return AsyncFromSyncIteratorContinuation(this.n.apply(this.s, arguments));
   },
   return: function (value) {
     var ret = this.s.return;
@@ -177,7 +174,7 @@ _SyncAsAsyncIterator.prototype = {
       ? Promise.reject(value)
       : AsyncFromSyncIteratorContinuation(thr.apply(this.s, arguments));
   },
-}
+};
 
 export function _asyncIterator(iterable) {
   let method;
@@ -288,7 +285,7 @@ async function asyncToArray(source) {
   try {
     for (
       var _step;
-      _iteratorAbruptCompletion = !(_step = await _iterator.next()).done;
+      (_iteratorAbruptCompletion = !(_step = await _iterator.next()).done);
       _iteratorAbruptCompletion = false
     ) {
       const value = _step.value;

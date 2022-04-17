@@ -1,8 +1,8 @@
-import {str} from 'iter-tools-es'
+import { str } from 'iter-tools-es';
 import { readFile } from 'fs/promises';
 
 function csvParse(input) {
-  return input.split('\n').map(row => str(row.split(',')));
+  return input.split('\n').map((row) => str(row.split(',')));
 }
 
 console.time('time');
