@@ -24,7 +24,7 @@ time: 430ms
 # A single async loop transpiled to a generator coroutine and altered to skip unnecessary awaits.
 > node parsers/transpiled-asyncish.js
 rows: 50002
-time: 434ms
+time: 434ms  <-- look at me!
 
 # A single async loop running natively.
 > node parsers/async.js        
