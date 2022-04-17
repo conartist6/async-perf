@@ -2,5 +2,8 @@
 	"type": "module",
 	"dependencies": {
 		"iter-tools-es": "7.3.1"
+	},
+	"devDependencies": {
+		"prettier": "^2.6.2"
 	}
 }

@@ -2,12 +2,22 @@ lockfileVersion: 5.3
 
 specifiers:
   iter-tools-es: 7.3.1
+  prettier: ^2.6.2
 
 dependencies:
   iter-tools-es: 7.3.1
+
+devDependencies:
+  prettier: 2.6.2
 
 packages:
 
   /iter-tools-es/7.3.1:
     resolution: {integrity: sha512-U4e1sPxQUFE8a4QAH/+1jIj5rZkHKtXguq1p3oOOuKJIbUYI5h2gSXM6CpYHcN9Od7A6hkoHOzIPrJ9afkRM4Q==}
     dev: false
+
+  /prettier/2.6.2:
+    resolution: {integrity: sha512-PkUpF+qoXTqhOeWL9fu7As8LXsIUZ1WYaJiY/a7McAQzxjk82OF0tibkFXVCDImZtWxbvojFjerkiLb0/q8mew==}
+    engines: {node: '>=10.13.0'}
+    hasBin: true
+    dev: true
