@@ -59,6 +59,7 @@ time: 2.6s
 ```
 
 ## The proposal
+The proposed fix to the language is to introduce a `for await? .. of` loop that is defined to only await when awaiting is necessary. It would look like this:
 
 ```
 async function* codePoints(path) {
@@ -71,3 +72,5 @@ const iter = codePoints('./test.csv')[Symbol.syncAndAsyncIterator]();
 iter.next(); // Promise<{value: 103 , done: false }>
 iter.next(); // {value: 117 , done: false }
 ```
+
+It would also be necessary to make some changes to the way generators work internally so that their `next()` method can return an iterator result synchronously as long as no asynchronous work was needed to produce the value. To see what those changes would be take a look at how the optimization is implemented in this repo by running `git diff --no-index parsers/transpiled-async.js parsers/transpiled-asyncish.js`. All these changes can be done while maintaining complete backwards compatibility.
