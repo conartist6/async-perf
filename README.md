@@ -27,7 +27,7 @@ time: 1.5s
 
 > node parsers/transpiled-async.js 
 rows: 50002
-time: 2.1s
+time: 1.62
 
 > node parsers/async-composed.js 
 rows: 50002

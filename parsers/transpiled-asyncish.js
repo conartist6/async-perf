@@ -2,15 +2,15 @@ import { createReadStream } from 'fs';
 
 class Awaited {
   constructor(value) {
-    this.awaited = value;
+    this.awaitable = value;
   }
 }
 
-export function _await(value) {
+export function _awaitWrap(value) {
   return new Awaited(value);
 }
 
-export function _asyncGeneratorDelegate(inner) {
+export function _asyncGeneratorDelegate(inner, awaitWrap) {
   const iter = {};
   let waiting = false;
 
@@ -104,7 +104,7 @@ export class _AsyncGenerator {
       const { value } = step;
       const isAwait = value instanceof Awaited;
       
-      Promise.resolve(isAwait ? value.awaited : value).then(
+      Promise.resolve(isAwait ? value.awaitable : value).then(
         (arg) => {
           if (isAwait) {
             // the sync generator hit an `await`
@@ -169,104 +169,95 @@ export function _asyncIterator(iterable) {
   throw new TypeError('Object is not async iterable');
 }
 
-
 function join(_x) {
   return _join.apply(this, arguments);
 }
 
-function _join() {
-  _join = _wrapAsyncGenerator(function* (chunks) {
-    let _iteratorAbruptCompletion = false;
-    let _didIteratorError = false;
-    let _iterator;
-    let _iteratorError;
+const _join = _wrapAsyncGenerator(function* (chunks) {
+  let _iteratorAbruptCompletion = false;
+  let _didIteratorError = false;
+  let _iterator;
+  let _iteratorError;
 
+  try {
+    _iterator = _asyncIterator(chunks);
+    for (
+      let _step, _step2;
+      (_step2 = _iterator.next()),
+        (_iteratorAbruptCompletion = !(_step = _step2 instanceof Promise ? yield _awaitWrap(_step2) : _step2).done);
+      _iteratorAbruptCompletion = false
+    ) {
+      const chunk = _step.value instanceof Promise ? yield _awaitWrap(_step.value) : _step.value;
+      yield* _asyncGeneratorDelegate(_asyncIterator(chunk));
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
     try {
-      _iterator = _asyncIterator(chunks);
-      for (
-        let _step, _step2;
-        (_step2 = _iterator.next()),
-          (_iteratorAbruptCompletion = !(_step = _step2 instanceof Promise ? yield _await(_step2) : _step2).done);
-        _iteratorAbruptCompletion = false
-      ) {
-        const chunk = _step.value instanceof Promise ? yield _await(_step.value) : _step.value;
-        yield* _asyncGeneratorDelegate(_asyncIterator(chunk));
+      if (_iteratorAbruptCompletion && _iterator.return != null) {
+        yield _awaitWrap(_iterator.return());
       }
-    } catch (err) {
-      _didIteratorError = true;
-      _iteratorError = err;
     } finally {
-      try {
-        if (_iteratorAbruptCompletion && _iterator.return != null) {
-          yield _await(_iterator.return());
-        }
-      } finally {
-        if (_didIteratorError) {
-          throw _iteratorError;
-        }
+      if (_didIteratorError) {
+        throw _iteratorError;
       }
     }
-  });
-
-  return _join.apply(this, arguments);
-}
+  }
+});
 
 function csvParse(_x2) {
   return _csvParse.apply(this, arguments);
 }
 
-function _csvParse() {
-  _csvParse = _wrapAsyncGenerator(function* (document) {
-    let row = [];
-    let value = '';
-    let _iteratorAbruptCompletion2 = false;
-    let _didIteratorError = false;
-    let _iterator;
-    let _iteratorError;
+const _csvParse = _wrapAsyncGenerator(function* (document) {
+  let row = [];
+  let value = '';
+  let _iteratorAbruptCompletion2 = false;
+  let _didIteratorError = false;
+  let _iterator;
+  let _iteratorError;
 
-    try {
-      _iterator = _asyncIterator(document);
-      for (
-        let _step, _step2;
-        (_step2 = _iterator.next()),
-          (_iteratorAbruptCompletion2 = !(_step = _step2 instanceof Promise ? yield _await(_step2) : _step2).done);
-        _iteratorAbruptCompletion2 = false
-      ) {
-        const chr = _step.value instanceof Promise ? yield _await(_step.value) : _step.value;
+  try {
+    _iterator = _asyncIterator(document);
+    for (
+      let _step, _step2;
+      (_step2 = _iterator.next()),
+        (_iteratorAbruptCompletion2 = !(_step = _step2 instanceof Promise ? yield _awaitWrap(_step2) : _step2).done);
+      _iteratorAbruptCompletion2 = false
+    ) {
+      const chr = _step.value instanceof Promise ? yield _awaitWrap(_step.value) : _step.value;
 
-        if (chr === ',') {
-          row.push(value);
-          value = '';
-        } else if (chr === '\n') {
-          row.push(value);
-          value = '';
-          yield row;
-          row = [];
-        } else {
-          value += chr;
-        }
-      }
-    } catch (err) {
-      _didIteratorError = true;
-      _iteratorError = err;
-    } finally {
-      try {
-        if (_iteratorAbruptCompletion2 && _iterator.return != null) {
-          yield _await(_iterator.return());
-        }
-      } finally {
-        if (_didIteratorError) {
-          throw _iteratorError;
-        }
+      if (chr === ',') {
+        row.push(value);
+        value = '';
+      } else if (chr === '\n') {
+        row.push(value);
+        value = '';
+        yield row;
+        row = [];
+      } else {
+        value += chr;
       }
     }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (_iteratorAbruptCompletion2 && _iterator.return != null) {
+        yield _awaitWrap(_iterator.return());
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
+  }
 
-    row.push(value);
-    yield row;
-  });
-
-  return _csvParse.apply(this, arguments);
-}
+  row.push(value);
+  yield row;
+});
 
 async function asyncToArray(source) {
   const arr = [];
