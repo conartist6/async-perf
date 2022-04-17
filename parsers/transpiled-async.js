@@ -10,21 +10,13 @@ export function _awaitWrap(value) {
   return new Awaited(value);
 }
 
-export function _asyncGeneratorDelegate(inner, awaitWrap) {
+export function _asyncGeneratorDelegate(inner, _awaitWrap) {
   const iter = {};
   let waiting = false;
 
   function pump(key, arg) {
-    var step = inner[key](arg);
-    if (step instanceof Promise) {
-      waiting = true;
-      return { done: false, value: awaitWrap(step.then(function(step) { return step.value instanceof Promise ? step.value.then((value) => { return { value: value, done: step.done }; }) : step })) };
-    } else if (step.value instanceof Promise) {
-      waiting = true;
-      return { done: false, value: awaitWrap(step.value.then(function(value) { return { value: value, done: step.done }; })) };
-    } else {
-      return step;
-    }
+    waiting = true;
+    return { done: false, value: _awaitWrap(Promise.resolve(inner[key](arg))) };
   }
 
   iter[Symbol.iterator] = function () {
@@ -79,7 +71,6 @@ export class _AsyncGenerator {
     }
   }
 
-  // This behavior still falls within the async iteration protocol
   [Symbol.asyncIterator]() {
     return this;
   }
@@ -155,6 +146,39 @@ export class _AsyncGenerator {
   }
 }
 
+function AsyncFromSyncIteratorContinuation(r) {
+  if (Object(r) !== r)
+    return Promise.reject(new TypeError(r + " is not an object."));
+  var done = r.done;
+  return Promise.resolve(r.value).then((value) => ({ value, done }));
+}
+
+function _SyncAsAsyncIterator(s) {
+  this.s = s;
+  this.n = s.next;
+}
+_SyncAsAsyncIterator.prototype = {
+  s: null,
+  n: null,
+  next: function () {
+    return AsyncFromSyncIteratorContinuation(
+      this.n.apply(this.s, arguments)
+    );
+  },
+  return: function (value) {
+    var ret = this.s.return;
+    return ret === undefined
+      ? Promise.resolve({ value, done: true })
+      : AsyncFromSyncIteratorContinuation(ret.apply(this.s, arguments));
+  },
+  throw: function (value) {
+    var thr = this.s.return;
+    return thr === undefined
+      ? Promise.reject(value)
+      : AsyncFromSyncIteratorContinuation(thr.apply(this.s, arguments));
+  },
+}
+
 export function _asyncIterator(iterable) {
   let method;
 
@@ -162,7 +186,7 @@ export function _asyncIterator(iterable) {
     return method.call(iterable);
   }
   if ((method = iterable[Symbol.iterator]) != null) {
-    return method.call(iterable);
+    return new _SyncAsAsyncIterator(method.call(iterable));
   }
   throw new TypeError('Object is not async iterable');
 }
@@ -180,12 +204,11 @@ const _join = _wrapAsyncGenerator(function* (chunks) {
   try {
     _iterator = _asyncIterator(chunks);
     for (
-      let _step, _step2;
-      (_step2 = _iterator.next()),
-        (_iteratorAbruptCompletion = !(_step = yield _awaitWrap(_step2)).done);
+      let _step;
+      (_iteratorAbruptCompletion = !(_step = yield _awaitWrap(_iterator.next())).done);
       _iteratorAbruptCompletion = false
     ) {
-      const chunk =  yield _awaitWrap(_step.value);
+      const chunk = _step.value;
       yield* _asyncGeneratorDelegate(_asyncIterator(chunk), _awaitWrap);
     }
   } catch (err) {
@@ -211,7 +234,7 @@ function csvParse(_x2) {
 const _csvParse = _wrapAsyncGenerator(function* (document) {
   let row = [];
   let value = '';
-  let _iteratorAbruptCompletion2 = false;
+  let _iteratorAbruptCompletion = false;
   let _didIteratorError = false;
   let _iterator;
   let _iteratorError;
@@ -219,12 +242,11 @@ const _csvParse = _wrapAsyncGenerator(function* (document) {
   try {
     _iterator = _asyncIterator(document);
     for (
-      let _step, _step2;
-      (_step2 = _iterator.next()),
-        (_iteratorAbruptCompletion2 = !(_step = yield _awaitWrap(_step2)).done);
-      _iteratorAbruptCompletion2 = false
+      let _step;
+      (_iteratorAbruptCompletion = !(_step = yield _awaitWrap(_iterator.next())).done);
+      _iteratorAbruptCompletion = false
     ) {
-      const chr = yield _awaitWrap(_step.value);
+      const chr = _step.value;
       if (chr === ',') {
         row.push(value);
         value = '';
@@ -242,7 +264,7 @@ const _csvParse = _wrapAsyncGenerator(function* (document) {
     _iteratorError = err;
   } finally {
     try {
-      if (_iteratorAbruptCompletion2 && _iterator.return != null) {
+      if (_iteratorAbruptCompletion && _iterator.return != null) {
         yield _awaitWrap(_iterator.return());
       }
     } finally {
@@ -269,7 +291,7 @@ async function asyncToArray(source) {
       _iteratorAbruptCompletion = !(_step = await _iterator.next()).done;
       _iteratorAbruptCompletion = false
     ) {
-      const value = await _step.value;
+      const value = _step.value;
       arr.push(value);
     }
   } catch (err) {

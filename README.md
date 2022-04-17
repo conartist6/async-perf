@@ -13,13 +13,13 @@ time: 161ms
 rows: 50002
 time: 295ms
 
-> node parsers/transpiled-asyncish.js
-rows: 50002
-time: 420ms
-
 > node parsers/sync-composed.js 
 rows: 50003
 time: 430ms
+
+> node parsers/transpiled-asyncish.js
+rows: 50002
+time: 434ms
 
 > node parsers/async.js        
 rows: 50002
@@ -27,7 +27,7 @@ time: 1.5s
 
 > node parsers/transpiled-async.js 
 rows: 50002
-time: 1.62
+time: 1.9s
 
 > node parsers/async-composed.js 
 rows: 50002
