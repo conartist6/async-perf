@@ -82,7 +82,7 @@ export class _AsyncGenerator {
 
   _send(method, arg) {
     const step = this._gen[method](arg);
-    const isAsync = step.value instanceof Awaited || step.value instanceof Promise;
+    const isAsync = step.value instanceof Awaited;
 
     return !isAsync
       ? step
@@ -154,6 +154,14 @@ export class _AsyncGenerator {
   return(arg) {
     return this._send('return', arg);
   }
+}
+
+function AsyncFromSyncIteratorContinuation(r) {
+  if (Object(r) !== r) return Promise.reject(new TypeError(r + ' is not an object.'));
+  var done = r.done;
+  return r.value instanceof Promise
+    ? Promise.resolve(r.value).then((value) => ({ value, done }))
+    : r;
 }
 
 function _SyncAsAsyncIterator(s) {
