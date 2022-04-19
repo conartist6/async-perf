@@ -15,7 +15,7 @@ An async iterable of sync iterables is a difficult shape to work with though. We
 # Takes string input and uses string.split. Reallocates string values to avoid memory leaks.
 > node parsers/memory.js
 rows: 50002
-time: 52ms
+time: 35ms
 
 # 2.
 # A two-loop solution with an outer async loop and an inner sync loop. Takes chunks of data.
